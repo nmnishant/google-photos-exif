@@ -115,25 +115,29 @@ class GooglePhotosExif extends Command {
     const fileNamesWithEditedExif: string[] = [];
 
     for (let i = 0, mediaFile; mediaFile = mediaFiles[i]; i++) {
+      try {
+        // Copy the file into output directory
+        this.log(`Copying file ${i} of ${mediaFiles.length}: ${mediaFile.mediaFilePath} -> ${mediaFile.outputFileName}`);
+        await copyFile(mediaFile.mediaFilePath, mediaFile.outputFilePath);
 
-      // Copy the file into output directory
-      this.log(`Copying file ${i} of ${mediaFiles.length}: ${mediaFile.mediaFilePath} -> ${mediaFile.outputFileName}`);
-      await copyFile(mediaFile.mediaFilePath, mediaFile.outputFilePath);
+        // Process the output file, setting the modified timestamp and/or EXIF metadata where necessary
+        const photoTimeTaken = await readPhotoTakenTimeFromGoogleJson(mediaFile);
 
-      // Process the output file, setting the modified timestamp and/or EXIF metadata where necessary
-      const photoTimeTaken = await readPhotoTakenTimeFromGoogleJson(mediaFile);
-
-      if (photoTimeTaken) {
-        if (mediaFile.supportsExif) {
-          const hasExifDate = await doesFileHaveExifDate(mediaFile.mediaFilePath);
-          if (!hasExifDate) {
-            await updateExifMetadata(mediaFile, photoTimeTaken, directories.error);
-            fileNamesWithEditedExif.push(mediaFile.outputFileName);
-            this.log(`Wrote "DateTimeOriginal" EXIF metadata to: ${mediaFile.outputFileName}`);
+        if (photoTimeTaken) {
+          if (mediaFile.supportsExif) {
+            const hasExifDate = await doesFileHaveExifDate(mediaFile.mediaFilePath);
+            if (!hasExifDate) {
+              await updateExifMetadata(mediaFile, photoTimeTaken, directories.error);
+              fileNamesWithEditedExif.push(mediaFile.outputFileName);
+              this.log(`Wrote "DateTimeOriginal" EXIF metadata to: ${mediaFile.outputFileName}`);
+            }
           }
-        }
 
-        await updateFileModificationDate(mediaFile.outputFilePath, photoTimeTaken);
+          await updateFileModificationDate(mediaFile.outputFilePath, photoTimeTaken);
+        }
+      }
+      catch(err) {
+        console.log(err);
       }
     }
 
