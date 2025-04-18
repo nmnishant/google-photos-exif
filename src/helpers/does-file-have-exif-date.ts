@@ -6,23 +6,14 @@ import { basename, join, resolve } from 'path';
 const { unlink, copyFile } = fspromises;
 
 export async function doesFileHaveExifDate(filePath: string): Promise<boolean> {
-  filePath = resolve(filePath);
-
   if (!doesFileSupportExif(filePath)) {
     return false;
   }
 
   console.log('doesFileHaveExifDate:::', filePath);  
 
-  const fileName = basename(filePath);
-  const tempFilePath = join('./temp', fileName);
 
-  await copyFile(
-    filePath,
-    tempFilePath
-  );
-
-  const readResult = await exiftool.read(tempFilePath);
+  const readResult = await exiftool.read(filePath);
 
   console.log('readResult:::', readResult)
   return !isNullOrUndefined(readResult.DateTimeOriginal);
