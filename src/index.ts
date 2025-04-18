@@ -117,7 +117,7 @@ class GooglePhotosExif extends Command {
     for (let i = 0; i < mediaFiles.length; i++) {
       try {
         const mediaFile = mediaFiles[i];
-        
+
         // Copy the file into output directory
         this.log(`Copying file ${i} of ${mediaFiles.length}: ${mediaFile.mediaFilePath} -> ${mediaFile.outputFileName}`);
         await copyFile(mediaFile.mediaFilePath, mediaFile.outputFilePath);
@@ -125,11 +125,18 @@ class GooglePhotosExif extends Command {
         // Process the output file, setting the modified timestamp and/or EXIF metadata where necessary
         const photoTimeTaken = await readPhotoTakenTimeFromGoogleJson(mediaFile);
 
+        console.log({photoTimeTaken})
+
         if (photoTimeTaken) {
+          console.log('inside photoTimeTaken')
           if (mediaFile.supportsExif) {
+            console.log('media supports supportsExif')
             const hasExifDate = await doesFileHaveExifDate(mediaFile.mediaFilePath);
+            console.log('hasExifDate::', hasExifDate)
             if (!hasExifDate) {
+              console.log('not hasExifDate::')
               await updateExifMetadata(mediaFile, photoTimeTaken, directories.error);
+              console.log('after update::')
               fileNamesWithEditedExif.push(mediaFile.outputFileName);
               this.log(`Wrote "DateTimeOriginal" EXIF metadata to: ${mediaFile.outputFileName}`);
             }
