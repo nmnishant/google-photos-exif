@@ -114,8 +114,10 @@ class GooglePhotosExif extends Command {
     this.log(`--- Processing media files ---`);
     const fileNamesWithEditedExif: string[] = [];
 
-    for (let i = 0, mediaFile; mediaFile = mediaFiles[i]; i++) {
+    for (let i = 0; i < mediaFiles.length; i++) {
       try {
+        const mediaFile = mediaFiles[i];
+        
         // Copy the file into output directory
         this.log(`Copying file ${i} of ${mediaFiles.length}: ${mediaFile.mediaFilePath} -> ${mediaFile.outputFileName}`);
         await copyFile(mediaFile.mediaFilePath, mediaFile.outputFilePath);
