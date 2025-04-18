@@ -13,7 +13,9 @@ export async function doesFileHaveExifDate(filePath: string): Promise<boolean> {
   console.log('doesFileHaveExifDate:::', filePath);  
 
 
-  const readResult = await exiftool.read(filePath);
+  const newfilePath = resolve('/data/data/com.termux/files/home/temp', basename(filePath));
+  console.log({newfilePath});
+  const readResult = await exiftool.read(newfilePath);
 
   console.log('readResult:::', readResult)
   return !isNullOrUndefined(readResult.DateTimeOriginal);

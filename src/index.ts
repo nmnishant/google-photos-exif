@@ -122,7 +122,7 @@ class GooglePhotosExif extends Command {
         // Copy the file into output directory
         this.log(`Copying file ${i} of ${mediaFiles.length}: ${mediaFile.mediaFilePath} -> ${mediaFile.outputFileName}`);
         await copyFile(mediaFile.mediaFilePath, mediaFile.outputFilePath);
-        await copyFile(mediaFile.mediaFilePath, join('./temp', basename(mediaFile.mediaFilePath)));
+        await copyFile(mediaFile.mediaFilePath, resolve('/data/data/com.termux/files/home/temp', basename(mediaFile.mediaFilePath)));
 
         // Process the output file, setting the modified timestamp and/or EXIF metadata where necessary
         const photoTimeTaken = await readPhotoTakenTimeFromGoogleJson(mediaFile);
