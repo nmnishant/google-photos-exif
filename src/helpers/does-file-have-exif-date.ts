@@ -7,6 +7,10 @@ export async function doesFileHaveExifDate(filePath: string): Promise<boolean> {
     return false;
   }
 
+  console.log('doesFileHaveExifDate:::')
+
   const readResult = await exiftool.read(filePath);
+
+  console.log('readResult:::', readResult)
   return !isNullOrUndefined(readResult.DateTimeOriginal);
 }
